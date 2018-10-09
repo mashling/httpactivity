@@ -45,7 +45,7 @@
     },
     {
       "name": "timeout",
-      "type": "int"
+      "type": "integer"
     }
   ],
   "output": [
@@ -55,7 +55,7 @@
     },
     {
       "name": "statusCode",
-      "type": "int"
+      "type": "integer"
     },
     {
       "name": "body",

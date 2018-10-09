@@ -1,0 +1,69 @@
+{
+  "name": "tibco-httpactivity",
+  "type": "http:activity",
+  "ref": "github.com/mashling/httpactivity",
+  "version": "0.0.1",
+  "title": "Invoke an HTTP Activity",
+  "description": "Invoke an HTTP Activity",
+  "homepage": "https://github.com/TIBCOSoftware/pointlander/httpactivity",
+  "input":[
+    {
+      "name": "serviceName",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "path",
+      "type": "string"
+    },
+    {
+      "name": "pathParams",
+      "type": "any"
+    },
+    {
+      "name": "method",
+      "type": "string",
+      "required": true,
+      "allowed" : ["GET", "POST", "PUT", "PATCH", "DELETE"]
+    },
+    {
+      "name": "url",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "body",
+      "type": "string"
+    },
+    {
+      "name": "headers",
+      "type": "any"
+    },
+    {
+      "name": "query",
+      "type": "any"
+    },
+    {
+      "name": "timeout",
+      "type": "int"
+    }
+  ],
+  "output": [
+    {
+      "name": "netError",
+      "type": "string"
+    },
+    {
+      "name": "statusCode",
+      "type": "int"
+    },
+    {
+      "name": "body",
+      "type": "any"
+    },
+    {
+      "name": "headers",
+      "type": "any"
+    }
+  ]
+}

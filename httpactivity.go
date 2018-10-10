@@ -10,9 +10,11 @@ import (
 	"strings"
 	"net"
 	"time"
+	"compress/gzip"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/imdario/mergo"
 	"github.com/mashling/mashling/registry"
+	"github.com/TIBCOSoftware/mashling/lib/util"
 )
 
 const (
@@ -180,13 +182,13 @@ func (h *HTTP) Execute() (err error) {
 
 // InitializeHTTP initializes an HTTP service with provided settings.
 func (f *Factory) Make(name string, settings map[string]interface{}) (registry.Service, error) {
-	httpService = &HTTP{}
+	httpService := &HTTP{}
 	req := HTTPRequest{}
 	req.PathParams = make(map[string]interface{})
 	req.Headers = make(map[string]interface{})
 	req.Query = make(map[string]string)
 	httpService.Request = req
-	err = httpService.setRequestValues(settings)
+	err := httpService.setRequestValues(settings)
 	return httpService, err
 }
 

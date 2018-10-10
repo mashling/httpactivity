@@ -14,7 +14,7 @@ import (
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/imdario/mergo"
 	"github.com/mashling/mashling/registry"
-	"github.com/TIBCOSoftware/mashling/lib/util"
+	"github.com/mashling/commons/lib/util"
 )
 
 const (

@@ -4,16 +4,13 @@ import (
 	"errors"
 	"fmt"
 	"bytes"
-	"crypto/tls"
-	"encoding/json"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
-	"github.com/TIBCOSoftware/flogo-contrib/action/flow/definition"
+	"net"
+	"time"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
-	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/imdario/mergo"
 	"github.com/mashling/mashling/registry"
 )
@@ -44,6 +41,9 @@ const (
 
 	defaultTimeout = 5
 )
+
+type Factory struct {
+}
 
 func init() {
 	registry.Register("HttpActivity", &Factory{})

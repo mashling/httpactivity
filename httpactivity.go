@@ -97,10 +97,10 @@ func (f *HttpActivity) Eval(context activity.Context) (done bool, err error) {
 	if err != nil {
 		return false, err
 	}
-	context.SetOutput(ovNetError, service.(*HttpActivity).Response.NetError)
-	context.SetOutput(ovStatusCode, service.(*HttpActivity).Response.StatusCode)
-	context.SetOutput(ovBody, service.(*HttpActivity).Response.Body)
-	context.SetOutput(ovHeaders, service.(*HttpActivity).Response.Headers)
+	context.SetOutput(ovNetError, service.(*HTTP).Response.NetError)
+	context.SetOutput(ovStatusCode, service.(*HTTP).Response.StatusCode)
+	context.SetOutput(ovBody, service.(*HTTP).Response.Body)
+	context.SetOutput(ovHeaders, service.(*HTTP).Response.Headers)
 	return true, nil
 }
 

@@ -56,7 +56,7 @@ type HttpActivity struct {
 }
 
 // creates a new activity
-func NewHttpActivity(metadata *activity.Metadata) activity.Activity {
+func NewActivity(metadata *activity.Metadata) activity.Activity {
 	return &HttpActivity{
 		metadata: metadata,
 	}

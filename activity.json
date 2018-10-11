@@ -1,6 +1,6 @@
 {
   "name": "tibco-httpactivity",
-  "type": "http:activity",
+  "type": "flogo:activity",
   "ref": "github.com/mashling/httpactivity",
   "version": "0.0.1",
   "title": "Invoke an HTTP Activity",

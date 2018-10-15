@@ -1,43 +1,42 @@
 package httpactivity
 
 import (
+	"bytes"
+	"compress/gzip"
 	"errors"
 	"fmt"
-	"bytes"
+	"github.com/TIBCOSoftware/flogo-lib/core/activity"
+	"github.com/imdario/mergo"
+	"github.com/mashling/commons/lib/util"
+	"github.com/mashling/mashling/registry"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
-	"net"
 	"time"
-	"reflect"
-	"compress/gzip"
-	"github.com/TIBCOSoftware/flogo-lib/core/activity"
-	"github.com/imdario/mergo"
-	"github.com/mashling/mashling/registry"
-	"github.com/mashling/commons/lib/util"
 )
 
 const (
 	ivServiceName = "serviceName"
-	ivPath = "path"
-	ivPathParams = "pathParams"
-	ivMethod = "method"
-	ivURL = "url"
-	ivBody = "body"
-	ivHeaders = "headers"
-	ivQuery = "query"
-	ivTimeout = "timeout"
+	ivPath        = "path"
+	ivPathParams  = "pathParams"
+	ivMethod      = "method"
+	ivURL         = "url"
+	ivBody        = "body"
+	ivHeaders     = "headers"
+	ivQuery       = "query"
+	ivTimeout     = "timeout"
 
-	ovNetError = "netError"
+	ovNetError   = "netError"
 	ovStatusCode = "statusCode"
-	ovBody = "body"
-	ovHeaders = "headers"
+	ovBody       = "body"
+	ovHeaders    = "headers"
 
-	methodGET = "GET"
-	methodPOST = "POST"
-	methodPUT = "PUT"
-	methodPATCH = "PATCH"
+	methodGET    = "GET"
+	methodPOST   = "POST"
+	methodPUT    = "PUT"
+	methodPATCH  = "PATCH"
 	methodDELETE = "DELETE"
 
 	contentTypeApplicationJSON = "application/json; charset=UTF-8"
@@ -80,13 +79,13 @@ func (f *HttpActivity) Eval(context activity.Context) (done bool, err error) {
 	}
 
 	settings := map[string]interface{}{
-		ivPath:    context.GetInput(ivPath),
+		ivPath:       context.GetInput(ivPath),
 		ivPathParams: context.GetInput(ivPathParams),
-		ivMethod:    context.GetInput(ivMethod),
-		ivURL:    context.GetInput(ivURL),
-		ivBody:    context.GetInput(ivBody),
+		ivMethod:     context.GetInput(ivMethod),
+		ivURL:        context.GetInput(ivURL),
+		ivBody:       context.GetInput(ivBody),
 		ivHeaders:    context.GetInput(ivHeaders),
-		ivQuery:    context.GetInput(ivQuery),
+		ivQuery:      context.GetInput(ivQuery),
 		ivTimeout:    context.GetInput(ivTimeout),
 	}
 	factory := Factory{}
@@ -105,7 +104,6 @@ func (f *HttpActivity) Eval(context activity.Context) (done bool, err error) {
 	return true, nil
 }
 
-
 // HTTP is an HTTP service.
 type HTTP struct {
 	netError bool
@@ -116,14 +114,14 @@ type HTTP struct {
 // HTTPRequest is an http service request.
 type HTTPRequest struct {
 	Path       string                 `json:"path"`
-	PathParams map[string]string `json:"pathParams"`
+	PathParams map[string]string      `json:"pathParams"`
 	Method     string                 `json:"method"`
 	URL        string                 `json:"url"`
 	Body       string                 `json:"body"`
 	Headers    map[string]interface{} `json:"headers"`
 	//Query      string      `json:"query"`
-	Query      map[string]string      `json:"query"`
-	Timeout    int                    `json:"timeout"`
+	Query   map[string]string `json:"query"`
+	Timeout int               `json:"timeout"`
 }
 
 // HTTPResponse is an http service response.
@@ -189,7 +187,6 @@ func (f *Factory) Make(name string, settings map[string]interface{}) (registry.S
 	req.PathParams = make(map[string]string)
 	req.Headers = make(map[string]interface{})
 	req.Query = make(map[string]string)
-	fmt.Println(req.Query)
 	httpService.Request = req
 	err := httpService.setRequestValues(settings)
 	return httpService, err
@@ -209,49 +206,39 @@ func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 		switch k {
 		case "url":
 			url, ok := v.(string)
-			fmt.Println("URL :", url)
 			if !ok {
 				return errors.New("invalid type for url")
 			}
 			h.Request.URL = url
 		case "method":
 			method, ok := v.(string)
-			fmt.Println("method :", method)
 			if !ok {
 				return errors.New("invalid type for method")
 			}
 			h.Request.Method = method
 		case "path":
 			path, ok := v.(string)
-			fmt.Println("path :", path)
 			if !ok {
 				return errors.New("invalid type for path")
 			}
 			h.Request.Path = path
 		case "headers":
-			if v!= nil {
-				headers, ok := v.(map[string]interface{})
-				if !ok {
-					return errors.New("invalid type for headers")
-				}
-				if err := mergo.Merge(&h.Request.Headers, headers, mergo.WithOverride); err != nil {
-					return errors.New("unable to merge header values")
-				}
+			headers, ok := v.(map[string]interface{})
+			if !ok {
+				return errors.New("invalid type for headers")
+			}
+			if err := mergo.Merge(&h.Request.Headers, headers, mergo.WithOverride); err != nil {
+				return errors.New("unable to merge header values")
 			}
 		case "query":
-			fmt.Println("value of query :", v)
-			if v!= "" {
-				fmt.Println(reflect.TypeOf(v).String())
-				query, ok := v.(map[string]string)
-				fmt.Println("query :", query)
-				if !ok {
-					return errors.New("invalid type for query")
-				}
-				h.Request.Query = query
+			query, ok := v.(map[string]string)
+			fmt.Println("query :", query)
+			if !ok {
+				return errors.New("invalid type for query")
 			}
+			h.Request.Query = query
 		case "pathParams":
 			pathParams, ok := v.(map[string]string)
-			fmt.Println("pathParams :", pathParams)
 			if !ok {
 				return errors.New("invalid type for pathParams")
 			}
@@ -260,16 +247,14 @@ func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 			}
 		case "body":
 			body = v
-			fmt.Println("body :", body)
 		case "netError":
 			netError, ok := v.(bool)
-			fmt.Println("neterror :", netError)
 			if !ok {
 				return errors.New("invalid type for netError")
 			}
 			h.netError = netError
 		default:
-		// ignore and move on.
+			// ignore and move on.
 		}
 	}
 	if body != nil {
@@ -339,7 +324,6 @@ func (h *HTTPRequest) CompleteURL() string {
 	}
 	if len(h.Query) > 0 {
 		params := url.Values{}
-		fmt.Println("query : ",h.Query)
 		for k, v := range h.Query {
 			params.Add(k, v)
 		}

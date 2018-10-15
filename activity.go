@@ -10,6 +10,7 @@ import (
 	"strings"
 	"net"
 	"time"
+	"reflect"
 	"compress/gzip"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/imdario/mergo"
@@ -115,11 +116,12 @@ type HTTP struct {
 // HTTPRequest is an http service request.
 type HTTPRequest struct {
 	Path       string                 `json:"path"`
-	PathParams map[string]interface{} `json:"pathParams"`
+	PathParams map[string]string `json:"pathParams"`
 	Method     string                 `json:"method"`
 	URL        string                 `json:"url"`
 	Body       string                 `json:"body"`
 	Headers    map[string]interface{} `json:"headers"`
+	//Query      string      `json:"query"`
 	Query      map[string]string      `json:"query"`
 	Timeout    int                    `json:"timeout"`
 }
@@ -184,9 +186,10 @@ func (h *HTTP) Execute() (err error) {
 func (f *Factory) Make(name string, settings map[string]interface{}) (registry.Service, error) {
 	httpService := &HTTP{}
 	req := HTTPRequest{}
-	req.PathParams = make(map[string]interface{})
+	req.PathParams = make(map[string]string)
 	req.Headers = make(map[string]interface{})
 	req.Query = make(map[string]string)
+	fmt.Println(req.Query)
 	httpService.Request = req
 	err := httpService.setRequestValues(settings)
 	return httpService, err
@@ -203,38 +206,49 @@ func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 		switch k {
 		case "url":
 			url, ok := v.(string)
+			fmt.Println("URL :", url)
 			if !ok {
 				return errors.New("invalid type for url")
 			}
 			h.Request.URL = url
 		case "method":
 			method, ok := v.(string)
+			fmt.Println("method :", method)
 			if !ok {
 				return errors.New("invalid type for method")
 			}
 			h.Request.Method = method
 		case "path":
 			path, ok := v.(string)
+			fmt.Println("path :", path)
 			if !ok {
 				return errors.New("invalid type for path")
 			}
 			h.Request.Path = path
 		case "headers":
-			headers, ok := v.(map[string]interface{})
-			if !ok {
-				return errors.New("invalid type for headers")
-			}
-			if err := mergo.Merge(&h.Request.Headers, headers, mergo.WithOverride); err != nil {
-				return errors.New("unable to merge header values")
+			if v!= nil {
+				headers, ok := v.(map[string]interface{})
+				if !ok {
+					return errors.New("invalid type for headers")
+				}
+				if err := mergo.Merge(&h.Request.Headers, headers, mergo.WithOverride); err != nil {
+					return errors.New("unable to merge header values")
+				}
 			}
 		case "query":
-			query, ok := v.(map[string]string)
-			if !ok {
-				return errors.New("invalid type for query")
+			fmt.Println("value of query :", v)
+			if v!= "" {
+				fmt.Println(reflect.TypeOf(v).String())
+				query, ok := v.(map[string]string)
+				fmt.Println("query :", query)
+				if !ok {
+					return errors.New("invalid type for query")
+				}
+				h.Request.Query = query
 			}
-			h.Request.Query = query
 		case "pathParams":
-			pathParams, ok := v.(map[string]interface{})
+			pathParams, ok := v.(map[string]string)
+			fmt.Println("pathParams :", pathParams)
 			if !ok {
 				return errors.New("invalid type for pathParams")
 			}
@@ -243,8 +257,10 @@ func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 			}
 		case "body":
 			body = v
+			fmt.Println("body :", body)
 		case "netError":
 			netError, ok := v.(bool)
+			fmt.Println("neterror :", netError)
 			if !ok {
 				return errors.New("invalid type for netError")
 			}
@@ -320,6 +336,7 @@ func (h *HTTPRequest) CompleteURL() string {
 	}
 	if len(h.Query) > 0 {
 		params := url.Values{}
+		fmt.Println("query : ",h.Query)
 		for k, v := range h.Query {
 			params.Add(k, v)
 		}

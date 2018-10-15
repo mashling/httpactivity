@@ -232,7 +232,6 @@ func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 			}
 		case "query":
 			query, ok := v.(map[string]string)
-			fmt.Println("query :", query)
 			if !ok {
 				return errors.New("invalid type for query")
 			}

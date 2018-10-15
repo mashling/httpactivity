@@ -143,12 +143,12 @@
                   {
                     "type": 1,
                     "value": "$activity[rest_2].statusCode",
-                    "mapTo": "statusCode"
+                    "mapTo": "code"
                   },
                   {
                     "type": 1,
                     "value": "$activity[rest_2].body",
-                    "mapTo": "body"
+                    "mapTo": "data"
                   }
                 ]
               }
@@ -159,7 +159,7 @@
               "id": 1,
               "from": "rest_2",
               "to": "reply_5",
-              "type": 1
+              "type": 0
             }
           ],
           "attributes": []

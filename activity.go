@@ -203,6 +203,9 @@ func (h *HTTP) UpdateRequest(values map[string]interface{}) (err error) {
 func (h *HTTP) setRequestValues(settings map[string]interface{}) (err error) {
 	var body interface{}
 	for k, v := range settings {
+		if v == nil {
+			continue
+		}
 		switch k {
 		case "url":
 			url, ok := v.(string)

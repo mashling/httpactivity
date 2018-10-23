@@ -134,7 +134,6 @@ type HTTPResponse struct {
 
 // Execute invokes this HTTP service.
 func (h *HTTP) Execute() (err error) {
-	h.netError = true
 	h.Response = HTTPResponse{}
 	if h.Request.Timeout == 0 {
 		h.Request.Timeout = defaultTimeout
@@ -150,11 +149,10 @@ func (h *HTTP) Execute() (err error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		if h.netError {
-			if netError, ok := err.(net.Error); ok {
-				h.Response.NetError = netError.Error()
-				return nil
-			}
+		if netError, ok := err.(net.Error); ok {
+			h.netError = true
+			h.Response.NetError = netError.Error()
+			return nil
 		}
 		return err
 	}
